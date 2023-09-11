@@ -1,8 +1,9 @@
-from .common import TrainingBase
+from custom_nodes.cg_custom_core.base import BaseNode
 import os
 
-class SaveDescription(TrainingBase):
+class SaveDescription(BaseNode):
     REQUIRED = {"description": ("STRING", {"defaultInput":True}), "image_filepath": ("STRING", {"defaultInput":True})}
+    CATEGORY = "utilities/training"
     OUTPUT_NODE = True
     def func(self, description, image_filepath):
         text_filepath = os.path.splitext(image_filepath)[0] + ".txt"

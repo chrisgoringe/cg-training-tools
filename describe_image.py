@@ -1,4 +1,4 @@
-from .common import TrainingBase
+from custom_nodes.cg_custom_core.base import BaseNode
 from .models.blip import blip_decoder
 import os
 import sys
@@ -38,12 +38,13 @@ def transformImage(input_image, image_size, device):
     )  # Change the shape of the output tensor
 
 @ui_signal('display_text')
-class TextDescriptionOfImage(TrainingBase):
+class TextDescriptionOfImage(BaseNode):
     REQUIRED = { "image": ("IMAGE",),
                  "min_length": ("INT", {"default":5, "min":0, "max":100}), 
                  "max_length": ("INT", {"default":20, "min":0, "max":100}) }
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("text",)
+    CATEGORY = "utilities/training"
     
     def func(self, image, min_length, max_length):
 # Change the current working directory to BLIP_NODE_ROOT

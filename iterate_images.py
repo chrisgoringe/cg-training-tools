@@ -1,4 +1,4 @@
-from .common import TrainingBase
+from custom_nodes.cg_custom_core.base import BaseNode
 from custom_nodes.cg_custom_core.ui_decorator import ui_signal
 import os
 from PIL import Image, ImageOps
@@ -13,7 +13,7 @@ def load_image(filepath:str) -> torch.Tensor:
         return torch.from_numpy(image)[None,]
 
 @ui_signal(['modify_self','terminate','display_text'])
-class IterateImages(TrainingBase):
+class IterateImages(BaseNode):
     REQUIRED = { 
         "folder": ("STRING", {} ), 
         "extensions": ("STRING", {"default":".jpg,.png"}),
@@ -21,6 +21,7 @@ class IterateImages(TrainingBase):
     }
     RETURN_TYPES = ("IMAGE","STRING",)
     RETURN_NAMES = ("image","filepath",)
+    CATEGORY = "utilities/training"
 
     def func(self, folder, extensions:str, reset):
         if not hasattr(self,'files_left') or reset=="yes":
