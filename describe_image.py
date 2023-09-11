@@ -8,6 +8,7 @@ from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 from PIL import Image
 from folder_paths import models_dir
+from comfy_extras.ui_decorator import ui_signal
 
 BLIP_NODE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BLIP_NODE_ROOT)
@@ -36,6 +37,7 @@ def transformImage(input_image, image_size, device):
         1, -1, image_size, image_size
     )  # Change the shape of the output tensor
 
+@ui_signal('display_text')
 class TextDescriptionOfImage(TrainingBase):
     REQUIRED = { "image": ("IMAGE",),
                  "min_length": ("INT", {"default":5, "min":0, "max":100}), 
@@ -80,5 +82,5 @@ class TextDescriptionOfImage(TrainingBase):
             )
 
         os.chdir(cwd)
-        return (caption[0],)
+        return (caption[0],caption[0],)
     

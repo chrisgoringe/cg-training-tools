@@ -1,4 +1,5 @@
-from .common import TrainingBase, textdisplay, terminator, selfmodify
+from .common import TrainingBase
+from custom_nodes.cg_custom_core.ui_decorator import ui_signal
 import os
 from PIL import Image, ImageOps
 import numpy as np
@@ -11,13 +12,8 @@ def load_image(filepath:str) -> torch.Tensor:
         image = np.array(image).astype(np.float32) / 255.0
         return torch.from_numpy(image)[None,]
 
-@selfmodify
-@terminator
-@textdisplay
+@ui_signal(['modify_self','terminate','display_text'])
 class IterateImages(TrainingBase):
-    def __init__(self):
-        self.files_left = None
-
     REQUIRED = { 
         "folder": ("STRING", {} ), 
         "extensions": ("STRING", {"default":".jpg,.png"}),
@@ -27,7 +23,7 @@ class IterateImages(TrainingBase):
     RETURN_NAMES = ("image","filepath",)
 
     def func(self, folder, extensions:str, reset):
-        if self.files_left is None or reset=="yes":
+        if not hasattr(self,'files_left') or reset=="yes":
             extension_list = extensions.split(",")
             def is_image_filename(filename):
                 split = os.path.splitext(filename)
@@ -35,11 +31,11 @@ class IterateImages(TrainingBase):
             self.files_left = [file for file in os.listdir(folder) if is_image_filename(file)]
 
         if self.files_left==[]:
-            return (None, "", [], "yes", f"No more files matching {extensions} in {folder}")
+            return (None, "", [], "terminate", f"No more files matching {extensions} in {folder}")
         
-        filepath = os.path.join(folder, self.files_left[0])
+        filename = self.files_left[0]
+        filepath = os.path.join(folder, filename)
         self.files_left = self.files_left[1:]
-        message = f"{len(self.files_left)} files remaining"
-        terminate = "yes" if len(self.files_left)==0 else "no"
+        message = f"{filename}\n{len(self.files_left)} files remaining"
 
-        return (load_image(filepath), filepath, [("reset","no"),], terminate, message)
+        return (load_image(filepath), filepath, [("reset","no"),], "no" if len(self.files_left) else "autoqueueoff", message)

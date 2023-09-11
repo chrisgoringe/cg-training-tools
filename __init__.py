@@ -13,4 +13,3 @@ NODE_CLASS_MAPPINGS = {
 
 __all__ = ['NODE_CLASS_MAPPINGS']
 
-shutil.copytree(module_js_directory_training, application_web_extensions_directory, dirs_exist_ok=True)
