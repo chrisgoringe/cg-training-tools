@@ -11,7 +11,6 @@ except:
 
 sys.path.insert(0,os.path.dirname(os.path.realpath(__file__)))
 from .iterate_images import *
-from .common import *
 from .save_description import *
 from .describe_image import *
 
