@@ -13,14 +13,11 @@ sys.path.insert(0,os.path.dirname(os.path.realpath(__file__)))
 from .iterate_images import *
 from .save_description import *
 from .describe_image import *
-from .vae_training import *
 
 NODE_CLASS_MAPPINGS = { 
     "Iterate Images" : IterateImages, 
     "Describe Image" : TextDescriptionOfImage,
     "Save Description" : SaveDescription,
-    "Prepare Vae": PrepareVae,
-    "Optimizer Step" : OptimizerStep,
  }
 
 __all__ = ['NODE_CLASS_MAPPINGS']
