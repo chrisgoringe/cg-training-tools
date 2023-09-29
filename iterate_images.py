@@ -1,16 +1,17 @@
 from custom_nodes.cg_custom_core.base import BaseNode
 from custom_nodes.cg_custom_core.ui_decorator import ui_signal
-import os
+import os, json
 from PIL import Image, ImageOps
 import numpy as np
 import torch
 
 def load_image(filepath:str) -> torch.Tensor:
         i = Image.open(filepath)
+        text = i.text if hasattr(i,'text') else {}
         i = ImageOps.exif_transpose(i)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
-        return torch.from_numpy(image)[None,]
+        return torch.from_numpy(image)[None,], json.dumps(text, indent=1)
 
 @ui_signal(['modify_self','terminate','display_text'])
 class IterateImages(BaseNode):
@@ -19,8 +20,8 @@ class IterateImages(BaseNode):
         "extensions": ("STRING", {"default":".jpg,.png"}),
         "reset": (["no","yes"], {})
     }
-    RETURN_TYPES = ("IMAGE","STRING",)
-    RETURN_NAMES = ("image","filepath",)
+    RETURN_TYPES = ("IMAGE","STRING","STRING",)
+    RETURN_NAMES = ("image","filepath","metadata",)
     CATEGORY = "utilities/training"
 
     def func(self, folder, extensions:str, reset):
@@ -39,4 +40,6 @@ class IterateImages(BaseNode):
         self.files_left = self.files_left[1:]
         message = f"{filename}\n{len(self.files_left)} files remaining"
 
-        return (load_image(filepath), filepath, [("reset","no"),], "no" if len(self.files_left) else "autoqueueoff", message)
+        image, metadata = load_image(filepath)
+
+        return (image, filepath, metadata, [("reset","no"),], "no" if len(self.files_left) else "autoqueueoff", message)
