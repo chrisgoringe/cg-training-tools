@@ -1,4 +1,5 @@
 from custom_nodes.cg_custom_core.base import BaseNode
+from custom_nodes.cg_custom_core.ui_decorator import ui_signal
 from .models.blip import blip_decoder
 import os
 import sys
@@ -8,7 +9,6 @@ from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 from PIL import Image
 from folder_paths import models_dir
-from comfy_extras.ui_decorator import ui_signal
 
 BLIP_NODE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BLIP_NODE_ROOT)
