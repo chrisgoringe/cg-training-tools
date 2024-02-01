@@ -18,13 +18,14 @@ class IterateImages(BaseNode):
     REQUIRED = { 
         "folder": ("STRING", {} ), 
         "extensions": ("STRING", {"default":".jpg,.png"}),
-        "reset": (["no","yes"], {})
+        "reset": (["no","yes"], {}),
+        "delete_images": (["no","yes"], {}),
     }
     RETURN_TYPES = ("IMAGE","STRING","STRING",)
     RETURN_NAMES = ("image","filepath","metadata",)
     CATEGORY = "utilities/training"
 
-    def func(self, folder, extensions:str, reset):
+    def func(self, folder, extensions:str, reset, delete_images):
         if not hasattr(self,'files_left') or reset=="yes":
             extension_list = extensions.split(",")
             def is_image_filename(filename):
@@ -41,5 +42,7 @@ class IterateImages(BaseNode):
         message = f"{filename}\n{len(self.files_left)} files remaining"
 
         image, metadata = load_image(filepath)
+
+        if delete_images: os.remove(filepath)
 
         return (image, filepath, metadata, [("reset","no"),], "no" if len(self.files_left) else "autoqueueoff", message)
