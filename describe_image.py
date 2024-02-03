@@ -1,5 +1,4 @@
-from custom_nodes.cg_custom_core.base import BaseNode
-from custom_nodes.cg_custom_core.ui_decorator import ui_signal
+from .base import BaseNode
 from .models.blip import blip_decoder
 import os
 import sys
@@ -37,7 +36,6 @@ def transformImage(input_image, image_size, device):
         1, -1, image_size, image_size
     )  # Change the shape of the output tensor
 
-@ui_signal('display_text')
 class TextDescriptionOfImage(BaseNode):
     REQUIRED = { "image": ("IMAGE",),
                  "min_length": ("INT", {"default":5, "min":0, "max":100}), 
@@ -83,5 +81,5 @@ class TextDescriptionOfImage(BaseNode):
             )
 
         os.chdir(cwd)
-        return (caption[0],caption[0],)
+        return (caption[0],)
     

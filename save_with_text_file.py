@@ -19,3 +19,5 @@ class SaveWithText(SaveImage):
             with open(txt_path, 'w') as f:
                 print(text, file=f)
         return returnable
+    
+

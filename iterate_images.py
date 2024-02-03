@@ -1,5 +1,5 @@
-from custom_nodes.cg_custom_core.base import BaseNode
-from custom_nodes.cg_custom_core.ui_decorator import ui_signal
+from .base import BaseNode
+from .ui_decorator import ui_signal
 import os, json
 from PIL import Image, ImageOps
 import numpy as np
@@ -18,15 +18,15 @@ class IterateImages(BaseNode):
     REQUIRED = { 
         "folder": ("STRING", {} ), 
         "extensions": ("STRING", {"default":".jpg,.png"}),
-        "reset": (["no","yes"], {}),
+        "reset": (["no","yes","always"], {}),
         "delete_images": (["no","yes"], {}),
     }
-    RETURN_TYPES = ("IMAGE","STRING","STRING",)
-    RETURN_NAMES = ("image","filepath","metadata",)
+    RETURN_TYPES = ("IMAGE","STRING","STRING","STRING",)
+    RETURN_NAMES = ("image","filepath","metadata",".txt")
     CATEGORY = "utilities/training"
 
     def func(self, folder, extensions:str, reset, delete_images):
-        if not hasattr(self,'files_left') or reset=="yes":
+        if not hasattr(self,'files_left') or reset!="no":
             extension_list = extensions.split(",")
             def is_image_filename(filename):
                 split = os.path.splitext(filename)
@@ -43,6 +43,13 @@ class IterateImages(BaseNode):
 
         image, metadata = load_image(filepath)
 
+        textpath = os.path.splitext(filepath)[0] + ".txt"
+        try:
+            with open(textpath,'r') as f:
+                text = "\n".join(f.readlines())
+        except:
+            text = ""
+
         if delete_images: os.remove(filepath)
 
-        return (image, filepath, metadata, [("reset","no"),], "no" if len(self.files_left) else "autoqueueoff", message)
+        return (image, filepath, metadata, text, [("reset","no"),] if reset!="always" else [], "no" if len(self.files_left) else "autoqueueoff", message)
