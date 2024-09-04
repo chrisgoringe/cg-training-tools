@@ -50,6 +50,6 @@ class IterateImages(BaseNode):
         except:
             text = ""
 
-        if delete_images: os.remove(filepath)
+        if delete_images=="yes": os.remove(filepath)
 
         return (image, filepath, metadata, text, [("reset","no"),] if reset!="always" else [], "no" if len(self.files_left) else "autoqueueoff", message)
